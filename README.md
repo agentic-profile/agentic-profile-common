@@ -1,2 +1,4 @@
-# agentic-profile-common
-Agentic Profile Node.js package of common types and utility functions
+# Agentic Profile Common Library
+
+Agentic Profile library common types and utility functions.
+
