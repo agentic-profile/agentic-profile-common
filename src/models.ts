@@ -1,6 +1,5 @@
 import {
     DIDDocument,
-    //JsonWebKey,
     Service,
     VerificationMethod
 } from "did-resolver";

@@ -7,7 +7,7 @@ import {
 import { getResolver as getWebDidResolver } from "./web-did-resolver.js";
 
 
-export interface AgentHooks {
+export interface CommonHooks {
     //generateChatReply: ( uid: UserId, agentDid: DID, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
     createAgentDid: ( uid: UserId ) => DID;
     didResolver: Resolver
