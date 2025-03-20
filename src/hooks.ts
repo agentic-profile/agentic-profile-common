@@ -1,30 +1,18 @@
 import { Resolver } from "did-resolver";
 
 import {
-	DID,
-	UserId,
+    CommonStorage,
 } from "./models.js";
 import { getResolver as getWebDidResolver } from "./web-did-resolver.js";
 
-
 export interface CommonHooks {
-    //generateChatReply: ( uid: UserId, agentDid: DID, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
-    createAgentDid: ( uid: UserId ) => DID;
-    didResolver: Resolver
+    didResolver: Resolver,
+    storage: CommonStorage
 }
-
-/*
-export interface AgentHookOverrides {
-    //generateChatReply?: ( uid: UserId, agentDid: DID, history: ChatMessage[] ) => Promise<ChatCompletionResult>;
-    createAgentDid?: ( uid: UserId ) => DID;
-    didResolver?: Resolver
-}
-*/
 
 const defaultHooks = {
-    //generateChatReply,
-    createAgentDid: ( uid: UserId ) => `did:web:${process.env.AP_DOMAIN ?? "example.com"}:${uid}`,
-    didResolver: new Resolver( getWebDidResolver() )
+    didResolver: new Resolver( getWebDidResolver() ),
+    storage: { dump: ()=>({ database: "None" }) }
 };
 
 export function setAgentHooks<T>( hooks: T ) {

@@ -6,7 +6,6 @@ import {
 
 export type DID = string;           // MAY include a fragment... or not 
 export type FragmentID = string;    // may be full DID, or just the fragment part, such as "#key-7"
-export type UserId = string | number;
 
 
 //
@@ -34,4 +33,12 @@ export interface ChatMessage {
     from: DID;
     content: string | Record<string, any>;
     created?: Date;
+}
+
+//
+// Persistence/Storage
+//
+
+export interface CommonStorage {
+    dump: () => Promise<any>
 }
