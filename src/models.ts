@@ -13,10 +13,10 @@ export type FragmentID = string;    // may be full DID, or just the fragment par
 //
 
 export interface AgentService extends Service {
-    // id: string,
-    // type: string,               // e.g. "AgenticChat",
-    // serviceEndpoint: string,    // e.g. `https://agents.matchwise.ai/agent-chat`,
-    name: string,                  // friendly name
+    // id: string,                  // Can be fully qualified DID, DID+#fragment-id, or just a #fragment-id 
+    // type: string,                // e.g. "Agentic/Chat", "Agentic/presence"
+    // serviceEndpoint: string,     // e.g. `https://agents.matchwise.ai/agent-chat`,
+    name: string,                   // friendly name
     capabilityInvocation: (FragmentID | VerificationMethod)[]
 }
 
