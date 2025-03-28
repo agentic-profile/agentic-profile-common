@@ -4,3 +4,4 @@ export {
     webDidToUrl
 } from "./web-did-resolver.js";
 export * from "./hooks.js";
+export * from "./misc.js";
