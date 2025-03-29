@@ -5,7 +5,6 @@ import {
     parse,
     ParsedDID
 } from "did-resolver";
-import fetch from 'cross-fetch';
 
 export function getResolver(): Record<string, DIDResolver> {
     async function resolve(did: string, parsed: ParsedDID): Promise<DIDResolutionResult> {
