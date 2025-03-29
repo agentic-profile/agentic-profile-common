@@ -1,4 +1,3 @@
-import axios from "axios";
 import { 
     DIDDocument,
     DIDResolutionResult,
@@ -6,14 +5,21 @@ import {
     parse,
     ParsedDID
 } from "did-resolver";
+import fetch from 'cross-fetch';
 
 export function getResolver(): Record<string, DIDResolver> {
     async function resolve(did: string, parsed: ParsedDID): Promise<DIDResolutionResult> {
         let url;
         try {
             url = webDidToUrl( did, parsed );
-            const { data } = await axios.get(url);
-            const didDocument = data as DIDDocument;
+
+            const response = await fetch( url );
+            if (!response.ok)
+                throw new Error(`HTTP error ${response.status}`);
+            const didDocument: DIDDocument = await response.json();
+
+            if (!didDocument || typeof didDocument !== 'object')
+                throw new Error("Invalid DID Document format");
 
             const contentType = didDocument?.["@context"] ? "application/did+ld+json" : "application/did+json";
             return {
