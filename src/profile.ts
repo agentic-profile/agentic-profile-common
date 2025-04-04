@@ -25,10 +25,17 @@ type Params = {
 }
 
 export async function createAgenticProfile({ template = {}, services, createJwk }: Params ) {
+    if( !createJwk )
+        throw new Error("Missing createJwk parameter");
 
     const keyring: JWKSet[] = [];
     const service: AgentService[] = [];
     for( const { subtype, url } of services ) {
+        if( !subtype )
+            throw new Error("createAgenticProfile() missing subtype");
+        if( !url )
+            throw new Error("createAgenticProfile() missing url");
+
         const jwk = await createJwk();
         const vmid = `#agent-${subtype}-key-0`;
         keyring.push({...jwk, id: vmid } as any);
@@ -51,7 +58,7 @@ export async function createAgenticProfile({ template = {}, services, createJwk 
     };
 
     const generalJwk = await createJwk();
-    const vmid = `#general-key-0`;
+    const vmid = `#identity-key`;
     keyring.push({ ...generalJwk, id: vmid } as any);
 
     const profile = {

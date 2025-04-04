@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/common",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "Agentic Profile Node.js package of common types and utility functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,7 @@
     "build": "tsup",
     "test": "jest"
   },
+  "packageManager": "yarn@4.8.1",
   "exports": {
     "import": "./dist/index.js",
     "require": "./dist/index.cjs"
@@ -32,17 +33,17 @@
     "did-resolver": "^4.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.9",
+    "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
-    "@babel/preset-typescript": "^7.26.0",
+    "@babel/preset-typescript": "^7.27.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.9.2",
+    "@types/node": "^22.14.0",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "regenerator-runtime": "^0.14.1",
-    "ts-jest": "^29.2.6",
+    "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.2"
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
   }
 }
