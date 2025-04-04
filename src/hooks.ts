@@ -2,17 +2,21 @@ import { Resolver } from "did-resolver";
 
 import {
     CommonStorage,
+    DID,
+    UserID
 } from "./models.js";
 import { getResolver as getWebDidResolver } from "./web-did-resolver.js";
 
 export interface CommonHooks {
     didResolver: Resolver,
-    storage: CommonStorage
+    storage: CommonStorage,
+    resolveUserAgenticProfileDid: ( uid: UserID ) => Promise<DID>,
 }
 
 const defaultHooks = {
     didResolver: new Resolver( getWebDidResolver() ),
-    storage: { dump: ()=>({ database: "None" }) }
+    storage: { dump: ()=>({ database: "None" }) },
+    resolveUserAgenticProfileDid: async ( uid: UserID ) => `did:${process.env.AP_DID_PATH ?? "web:example.com:iam"}:${uid}` 
 };
 
 export function setAgentHooks<T>( hooks: T ) {
