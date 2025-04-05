@@ -48,7 +48,7 @@ export function resolveFragmentId( didOrFid: string ) {
         return parse( didOrFid ) as ParsedDID;
 }
 
-export function removeFragment( did: DID ) {
+export function removeFragmentId( did: DID ) {
     return did.split("#")[0];
 }
 
