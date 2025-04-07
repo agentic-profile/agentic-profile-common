@@ -67,5 +67,8 @@ export interface ChatMessage {
 //
 
 export interface CommonStorage {
+    cacheAgenticProfile: ( profile: AgenticProfile ) => Promise<void>,
+    getCachedAgenticProfile: ( did: DID ) => Promise<AgenticProfile | undefined>,
+
     dump: () => Promise<any>
 }

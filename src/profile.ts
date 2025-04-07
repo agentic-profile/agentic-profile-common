@@ -5,8 +5,13 @@ import {
 import {
     AgenticProfile,
     AgentService,
+    DID,
     JWKSet
-} from "./models.js"
+} from "./models.js";
+import {
+    agentHooks,
+    CommonHooks
+} from "./hooks.js";
 
 
 type ProfileTemplate = {
@@ -20,11 +25,11 @@ type ServiceTemplate = {
 
 type Params = {
     template?: ProfileTemplate,
-    services: ServiceTemplate[],
+    services?: ServiceTemplate[],
     createJwk: ()=>Promise<JsonWebKey>
 }
 
-export async function createAgenticProfile({ template = {}, services, createJwk }: Params ) {
+export async function createAgenticProfile({ template = {}, services = [], createJwk }: Params ) {
     if( !createJwk )
         throw new Error("Missing createJwk parameter");
 
@@ -80,4 +85,13 @@ export async function createAgenticProfile({ template = {}, services, createJwk 
     } as AgenticProfile;
 
     return { profile, keyring, b64uPublicKey: generalJwk.b64uPublicKey };
+}
+
+export async function fetchAgenticProfile( profileDid: DID ): Promise<AgenticProfile> {
+    const { didDocument, didResolutionMetadata } = await agentHooks<CommonHooks>().didResolver.resolve( profileDid );
+    if( !didResolutionMetadata.error && didDocument )
+        return didDocument as AgenticProfile;
+
+    const { error, message } = didResolutionMetadata;
+    throw new Error( error + ": " + message );    
 }
