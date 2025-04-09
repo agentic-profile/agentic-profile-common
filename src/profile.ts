@@ -5,13 +5,8 @@ import {
 import {
     AgenticProfile,
     AgentService,
-    DID,
     JWKSet
 } from "./models.js";
-import {
-    agentHooks,
-    CommonHooks
-} from "./hooks.js";
 
 
 type ProfileTemplate = {
@@ -85,13 +80,4 @@ export async function createAgenticProfile({ template = {}, services = [], creat
     } as AgenticProfile;
 
     return { profile, keyring, b64uPublicKey: generalJwk.b64uPublicKey };
-}
-
-export async function fetchAgenticProfile( profileDid: DID ): Promise<AgenticProfile> {
-    const { didDocument, didResolutionMetadata } = await agentHooks<CommonHooks>().didResolver.resolve( profileDid );
-    if( !didResolutionMetadata.error && didDocument )
-        return didDocument as AgenticProfile;
-
-    const { error, message } = didResolutionMetadata;
-    throw new Error( error + ": " + message );    
 }

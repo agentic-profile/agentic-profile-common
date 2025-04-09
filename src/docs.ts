@@ -4,9 +4,14 @@ import {
     VerificationMethod
 } from "did-resolver";
 import {
+    AgenticProfile,
     DID,
     FragmentID
 } from "./models.js";
+import {
+    agentHooks,
+    CommonHooks
+} from "./hooks.js";
 
 
 //
@@ -41,6 +46,7 @@ export function resolveDocumentPartId( partOrId: DocumentPartOrFragmentID ): Fra
         return partOrId.id as FragmentID;
 }
 
+// DEPRECATED, use pruneFragmentId
 export function resolveFragmentId( didOrFid: string ) {
     if( didOrFid.startsWith('#') )
         return { did: null, fragment: didOrFid.slice(1) };
@@ -48,8 +54,14 @@ export function resolveFragmentId( didOrFid: string ) {
         return parse( didOrFid ) as ParsedDID;
 }
 
+// DEPRECATED, use pruneFragmentId
 export function removeFragmentId( did: DID ) {
     return did.split("#")[0];
+}
+
+export function pruneFragmentId( did: DID ) {
+    const [ documentId, fragment ] = did.split("#");
+    return { documentId, fragmentId: '#' + fragment };
 }
 
 export function matchingFragmentIds( partOrId: DocumentPartOrFragmentID, fid2: FragmentID ) {
@@ -71,4 +83,39 @@ export function matchingFragmentIds( partOrId: DocumentPartOrFragmentID, fid2: F
 
     //console.log( 'matchingFragmentIds is TRUE for', fid1, fid2 );
     return true;
+}
+
+export async function resolveAgentServiceUrl( agentDid: DID ) {
+    const { fragment } = resolveFragmentId( agentDid );
+    if( !fragment )
+        throw new Error(`Cannot resolve peer agent service URL when there is no fragment for ${agentDid}`);
+    const serviceId = "#" + fragment;
+
+    const profile = await fetchAgenticProfile( agentDid );
+
+    const found = profile.service?.find(e=>e.id === serviceId );
+    if( !found )
+        throw new Error(`Failed to find service ${serviceId} in ${agentDid}`);
+    const { serviceEndpoint } = found;
+    if( !serviceEndpoint )
+        throw new Error(`No serviceEndpoint for ${serviceId} in ${agentDid}`);
+    if( typeof serviceEndpoint === 'string' )
+        return serviceEndpoint as string;
+    if( !Array.isArray( serviceEndpoint ) )
+        throw new Error(`Unexpected service endpoint type for ${serviceId} in ${agentDid}`);
+    if( serviceEndpoint.length == 0 )
+        throw new Error(`Empty service endpoint list for ${serviceId} in ${agentDid}`);
+    if( typeof serviceEndpoint[0] !== 'string' )
+        throw new Error(`Unexpected service endpoint type in array for ${serviceId} in ${agentDid}`);
+
+    return serviceEndpoint[0] as string;
+}
+
+export async function fetchAgenticProfile( profileDid: DID ): Promise<AgenticProfile> {
+    const { didDocument, didResolutionMetadata } = await agentHooks<CommonHooks>().didResolver.resolve( profileDid );
+    if( !didResolutionMetadata.error && didDocument )
+        return didDocument as AgenticProfile;
+
+    const { error, message } = didResolutionMetadata;
+    throw new Error( error + ": " + message );    
 }

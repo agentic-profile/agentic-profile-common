@@ -13,6 +13,7 @@ import {
     UserID
 } from "./models.js";
 import { getResolver as getWebDidResolver } from "./web-did-resolver.js";
+import { removeFragmentId } from "./docs.js";
 
 export interface CommonHooks {
     didResolver: Resolver,
@@ -46,7 +47,7 @@ function defaultStorage() {
     const profileMap = new Map<string,AgenticProfile>();
     return {
         cacheAgenticProfile: async ( profile: AgenticProfile ) => { profileMap.set( profile.id, profile ) },
-        getCachedAgenticProfile: async ( did: DID ) => profileMap.get( did ),
+        getCachedAgenticProfile: async ( did: DID ) => profileMap.get( removeFragmentId( did ) ),
         dump: async ()=>({
             database: "None",
             agenticProfileCache: mapToObject( profileMap )
