@@ -1,3 +1,5 @@
+import log from "loglevel";
+
 export function prettyJson( obj: any ) {
     return JSON.stringify( obj, null, 4 );
 }
@@ -9,7 +11,7 @@ export function createTimer( name: string ) {
     return {
         elapsed: function( label:string, ...props:any[] ) {
             const now = Date.now();
-            console.log(`Timer(${name}:${label}) ${now-recent}ms, ${now-start}ms total`, ...props);
+            log.debug(`Timer(${name}:${label}) ${now-recent}ms, ${now-start}ms total`, ...props);
             recent = now;
         }
     };

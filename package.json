@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/common",
-  "version": "0.4.6",
+  "version": "0.4.8",
   "description": "Agentic Profile Node.js package of common types and utility functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,8 @@
   },
   "homepage": "https://github.com/agentic-profile/agentic-profile-common#readme",
   "dependencies": {
-    "did-resolver": "^4.1.0"
+    "did-resolver": "^4.1.0",
+    "loglevel": "^1.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
