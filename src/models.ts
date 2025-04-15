@@ -56,9 +56,20 @@ export interface JWKSet {
 // Chat is universal ;)
 //
 
+export interface ChatResolution {
+    like?: boolean,
+    [ key: string ]: any
+}
+
+export interface ChatMeta {
+    resolution?: ChatResolution,
+    [ key: string ]: any
+}
+
 export interface ChatMessage {
     from: DID;
     content: string | Record<string, any>;
+    meta?: ChatMeta,
     created?: Date;
 }
 
