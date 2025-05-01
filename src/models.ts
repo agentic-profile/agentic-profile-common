@@ -14,7 +14,7 @@ export type UserID = string | number;
 
 export interface AgentService extends Service {
     // id: string,                  // Can be fully qualified DID, DID+#fragment-id, or just a #fragment-id 
-    // type: string,                // e.g. "Agentic/Chat", "Agentic/presence"
+    // type: string,                // e.g. "Agentic/Chat", "Agentic/presence", "A2A/card"
     // serviceEndpoint: string,     // e.g. `https://agents.matchwise.ai/agent-chat`,
     name: string,                   // friendly name
     capabilityInvocation: (FragmentID | VerificationMethod)[]
