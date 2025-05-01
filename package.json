@@ -1,6 +1,6 @@
 {
   "name": "@agentic-profile/common",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "Agentic Profile Node.js package of common types and utility functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

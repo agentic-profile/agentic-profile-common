@@ -14,7 +14,10 @@ type ProfileTemplate = {
 }
 
 type ServiceTemplate = {
-    subtype: string,
+    name?: string,      // service name, or '<subtype> agent'
+    type?: string,      // service type, or 'Agentic/<subtype>'
+    id?: string,        // service id, or 'agent-<subtype>'
+    subtype?: string,
     url: string
 }
 
@@ -30,14 +33,14 @@ export async function createAgenticProfile({ template = {}, services = [], creat
 
     const keyring: JWKSet[] = [];
     const service: AgentService[] = [];
-    for( const { subtype, url } of services ) {
-        if( !subtype )
+    for( const { name, type, id, subtype, url } of services ) {
+        if( !(name && id && type) && !subtype )
             throw new Error("createAgenticProfile() missing subtype");
         if( !url )
             throw new Error("createAgenticProfile() missing url");
 
         const jwk = await createJwk();
-        const vmid = `#agent-${subtype}-key-0`;
+        const vmid = `#agent-${id ?? subtype}-key-0`;
         keyring.push({...jwk, id: vmid } as any);
 
         const verificationMethod = {
@@ -47,9 +50,9 @@ export async function createAgenticProfile({ template = {}, services = [], creat
         } as VerificationMethod;
 
         service.push({
-            name: `${subtype} agent`,
-            id: `#agent-${subtype}`,
-            type: `Agentic/${subtype}`,
+            name: name ?? `${subtype} agent`,
+            id: `#${id ?? 'agent-' + subtype}`,
+            type: type ?? `Agentic/${subtype}`,
             serviceEndpoint: url,
             capabilityInvocation: [
                 verificationMethod
