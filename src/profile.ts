@@ -6,7 +6,7 @@ import {
     AgenticProfile,
     AgentService,
     JWKSet
-} from "./models.js";
+} from "./schema.js";
 
 
 type ProfileTemplate = {

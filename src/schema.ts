@@ -3,6 +3,9 @@ import {
     Service,
     VerificationMethod
 } from "did-resolver";
+import { Part } from "./a2a-parts.js";
+
+export * from "./a2a-parts.js";
 
 export type DID = string;           // MAY include a fragment... or not 
 export type FragmentID = string;    // may be full DID, or just the fragment part, such as "#key-7"
@@ -53,33 +56,17 @@ export interface JWKSet {
 
 
 //
-// Chat is universal ;)
+// Standardize globally scoped agent messaging (DIDs); use Googles A2A message parts
 //
 
-export interface ChatResolution {
-    like?: boolean,
+export interface TypedMeta {
+    type: string,
     [ key: string ]: any
 }
 
-export interface ChatMeta {
-    resolution?: ChatResolution,
-    [ key: string ]: any
-}
-
-export interface ChatMessage {
+export interface AgentMessage {
     from: DID;
-    content: string | Record<string, any>;
-    meta?: ChatMeta,
+    content: string | Part[];
+    meta?: TypedMeta[],
     created?: Date;
-}
-
-//
-// Persistence/Storage
-//
-
-export interface CommonStorage {
-    cacheAgenticProfile: ( profile: AgenticProfile ) => Promise<void>,
-    getCachedAgenticProfile: ( did: DID ) => Promise<AgenticProfile | undefined>,
-
-    dump: () => Promise<any>
 }

@@ -1,17 +1,14 @@
 import {
     parse,
     ParsedDID,
+    Resolver,
     VerificationMethod
 } from "did-resolver";
 import {
     AgenticProfile,
     DID,
     FragmentID
-} from "./models.js";
-import {
-    agentHooks,
-    CommonHooks
-} from "./hooks.js";
+} from "./schema.js";
 
 
 //
@@ -85,13 +82,13 @@ export function matchingFragmentIds( partOrId: DocumentPartOrFragmentID, fid2: F
     return true;
 }
 
-export async function resolveAgentServiceUrl( agentDid: DID ) {
+export async function resolveAgentServiceUrl( agentDid: DID, didResolver: Resolver ) {
     const { fragment } = resolveFragmentId( agentDid );
     if( !fragment )
         throw new Error(`Cannot resolve peer agent service URL when there is no fragment for ${agentDid}`);
     const serviceId = "#" + fragment;
 
-    const profile = await fetchAgenticProfile( agentDid );
+    const profile = await fetchAgenticProfile( agentDid, didResolver );
 
     const found = profile.service?.find(e=>e.id === serviceId );
     if( !found )
@@ -111,8 +108,8 @@ export async function resolveAgentServiceUrl( agentDid: DID ) {
     return serviceEndpoint[0] as string;
 }
 
-export async function fetchAgenticProfile( profileDid: DID ): Promise<AgenticProfile> {
-    const { didDocument, didResolutionMetadata } = await agentHooks<CommonHooks>().didResolver.resolve( profileDid );
+export async function fetchAgenticProfile( profileDid: DID, didResolver: Resolver ): Promise<AgenticProfile> {
+    const { didDocument, didResolutionMetadata } = await didResolver.resolve( profileDid );
     if( !didResolutionMetadata.error && didDocument )
         return didDocument as AgenticProfile;
 

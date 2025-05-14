@@ -6,13 +6,13 @@ import {
     ParsedDID
 } from "did-resolver";
 
-export function getResolver(): Record<string, DIDResolver> {
+export function getResolver(fetchImpl: typeof fetch = fetch): Record<string, DIDResolver> {
     async function resolve(did: string, parsed: ParsedDID): Promise<DIDResolutionResult> {
         let url;
         try {
             url = webDidToUrl( did, parsed );
 
-            const response = await fetch( url );
+            const response = await fetchImpl( url );
             if (!response.ok)
                 throw new Error(`HTTP error ${response.status}`);
             const didDocument: DIDDocument = await response.json();

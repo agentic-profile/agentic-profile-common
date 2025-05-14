@@ -1,29 +1,18 @@
 import { Resolver } from "did-resolver";
+import {
+    createResolverCache,
+    InMemoryAgenticProfileStore,
+} from "../src/did-resolver";
 import { webDidToUrl } from "../src/web-did-resolver";
-import {
-    createAgenticProfile,
-    fetchAgenticProfile
-} from "../src/profile";
-import { DID } from "../src/models.js";
-import {
-    agentHooks,
-    setAgentHooks,
-    storageCache
-} from "../src/hooks.js";
-import { prettyJson } from "../src/misc.js";
+import { createAgenticProfile } from "../src/profile";
+import { fetchAgenticProfile } from "../src/docs";
+
+import { DID } from "../src/models";
+import { prettyJson } from "../src/misc";
 
 const EXAMPLE_DID = "did:web:example.com:test"
 
 describe("Agentic Profile Common Package", () => {
-    beforeAll(async() => {
-        const { profile } = await createAgenticProfile({ createJwk });
-        profile.id = EXAMPLE_DID;
-
-        setAgentHooks({
-            didResolver: createDidResolver([profile])
-        });
-    });
-
     test("web did to http url", async () => {
         expect( webDidToUrl( "did:web:localhost%3A3003:iam:7" ) ).toBe( "http://localhost:3003/iam/7/did.json" );
         expect( webDidToUrl( "did:web:example.com:iam:7" ) ).toBe( "https://example.com/iam/7/did.json" );
@@ -31,17 +20,14 @@ describe("Agentic Profile Common Package", () => {
         expect( webDidToUrl( "did:web:example.com" ) ).toBe( "https://example.com/.well-known/did.json" );
     });
 
-    test("hooks and caching", async() => {
-        const hooks = agentHooks<CommonHooks>();
-        expect( await hooks.resolveUserAgenticProfileDid("6") ).toBe( "did:web:example.com:iam:6" );
+    test("create profile and resolve", async() => {
+        const { profile } = await createAgenticProfile({ createJwk });
+        profile.id = EXAMPLE_DID;
+        const didResolver = createDidResolver([profile]);
 
-        const profile = await fetchAgenticProfile( EXAMPLE_DID );
-        expect( profile.id ).toBe( EXAMPLE_DID );
-        console.log( "pid", profile.id, EXAMPLE_DID );
-
-        console.log( "Storage:", prettyJson( await hooks.storage.dump() ) );
-
-        expect( fetchAgenticProfile( "did:web:example.com:foo" ) )
+        const fetchedProfile = await fetchAgenticProfile( EXAMPLE_DID, didResolver );
+        expect( fetchedProfile.id ).toBe( EXAMPLE_DID );
+        expect( fetchAgenticProfile( "did:web:example.com:foo", didResolver ) )
             .rejects.toThrow( "Failed to resolve DID document did:web:example.com:foo: Cound not find document" );
     })
 });
@@ -67,7 +53,8 @@ function createDidResolver( profiles: AgenticProfile[] ) {
         }
     }
 
-    return new Resolver({ web: resolve }, { cache: storageCache } );
+    const cache = createResolverCache( new InMemoryAgenticProfileStore() );
+    return new Resolver({ web: resolve }, { cache } );
 }
 
 async function createJwk() {

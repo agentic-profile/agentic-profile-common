@@ -3,10 +3,13 @@ import { defineConfig } from "tsup";
 export default defineConfig({
     entry: ["src/**/*.ts"],
     format: ["cjs", "esm"], // Build for commonJS and ESmodules
-    dts: true, // Generate declaration file (.d.ts)
+    dts: true,
     splitting: false,
     sourcemap: true,
     clean: true,
     outDir: "dist",
-    target: "esnext"
+    target: "esnext",
+    external: [
+        "loglevel"
+    ]
 });

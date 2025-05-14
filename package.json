@@ -1,7 +1,7 @@
 {
   "name": "@agentic-profile/common",
-  "version": "0.4.11",
-  "description": "Agentic Profile Node.js package of common types and utility functions",
+  "version": "0.5.0",
+  "description": "Agentic Profile common types and utility functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -9,13 +9,21 @@
     "build": "tsup",
     "test": "jest"
   },
-  "packageManager": "yarn@4.8.1",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js",
+      "require": "./dist/schema.js"
+    }
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
   "type": "module",
@@ -24,7 +32,7 @@
     "url": "git+https://github.com/agentic-profile/agentic-profile-common.git"
   },
   "author": "Mike Prince",
-  "license": "MIT",
+  "license": "Apache-2",
   "bugs": {
     "url": "https://github.com/agentic-profile/agentic-profile-common/issues"
   },
