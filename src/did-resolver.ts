@@ -43,7 +43,7 @@ function asDidResolutionResult( didDocument: DIDDocument, contentType: string = 
 
 export interface DidResolverOptions {
     store: AgenticProfileStore,
-    fetchImpl: typeof fetch
+    fetchImpl?: typeof fetch
 }
 
 export function createDidResolver(options?: DidResolverOptions) {
