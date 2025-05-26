@@ -1,7 +1,4 @@
-import {
-	JsonWebKey,
-	VerificationMethod
-} from "did-resolver";
+import { VerificationMethod } from "did-resolver";
 import {
     AgenticProfile,
     AgentService,
@@ -24,11 +21,11 @@ type ServiceTemplate = {
 type Params = {
     template?: ProfileTemplate,
     services?: ServiceTemplate[],
-    createJwk: ()=>Promise<JsonWebKey>
+    createJwkSet: ()=>Promise<JWKSet>
 }
 
-export async function createAgenticProfile({ template = {}, services = [], createJwk }: Params ) {
-    if( !createJwk )
+export async function createAgenticProfile({ template = {}, services = [], createJwkSet }: Params ) {
+    if( !createJwkSet )
         throw new Error("Missing createJwk parameter");
 
     const keyring: JWKSet[] = [];
@@ -39,14 +36,14 @@ export async function createAgenticProfile({ template = {}, services = [], creat
         if( !url )
             throw new Error("createAgenticProfile() missing url");
 
-        const jwk = await createJwk();
+        const jwkSet = await createJwkSet();
         const vmid = `#agent-${id ?? subtype}-key-0`;
-        keyring.push({...jwk, id: vmid } as any);
+        keyring.push({...jwkSet, id: vmid } as any);
 
         const verificationMethod = {
             id: vmid,
             type: "JsonWebKey2020",
-            publicKeyJwk: jwk.publicJwk
+            publicKeyJwk: jwkSet.publicJwk
         } as VerificationMethod;
 
         service.push({
@@ -60,9 +57,9 @@ export async function createAgenticProfile({ template = {}, services = [], creat
         });
     };
 
-    const generalJwk = await createJwk();
+    const generalJwkSet = await createJwkSet();
     const vmid = `#identity-key`;
-    keyring.push({ ...generalJwk, id: vmid } as any);
+    keyring.push({ ...generalJwkSet, id: vmid } as any);
 
     const profile = {
         "@context": [
@@ -76,11 +73,11 @@ export async function createAgenticProfile({ template = {}, services = [], creat
             {
                 id: vmid,
                 type: "JsonWebKey2020",
-                publicKeyJwk: generalJwk.publicJwk
+                publicKeyJwk: generalJwkSet.publicJwk
             } as VerificationMethod
         ],
         service
     } as AgenticProfile;
 
-    return { profile, keyring, b64uPublicKey: generalJwk.b64uPublicKey };
+    return { profile, keyring, b64uPublicKey: generalJwkSet.b64uPublicKey };
 }
