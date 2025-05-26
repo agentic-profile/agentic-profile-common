@@ -2,13 +2,11 @@ import { Resolver } from "did-resolver";
 import {
     createResolverCache,
     InMemoryAgenticProfileStore,
-} from "../src/did-resolver";
-import { webDidToUrl } from "../src/web-did-resolver";
-import { createAgenticProfile } from "../src/profile";
-import { fetchAgenticProfile } from "../src/docs";
-
-import { DID } from "../src/models";
-import { prettyJson } from "../src/misc";
+} from "../src/did-resolver.js";
+import { webDidToUrl } from "../src/web-did-resolver.js";
+import { createAgenticProfile } from "../src/profile.js";
+import { fetchAgenticProfile } from "../src/docs.js";
+import { AgenticProfile, JWKSet, EdDSAPrivateJWK, EdDSAPublicJWK } from "../src/schema.js";
 
 const EXAMPLE_DID = "did:web:example.com:test"
 
@@ -21,7 +19,7 @@ describe("Agentic Profile Common Package", () => {
     });
 
     test("create profile and resolve", async() => {
-        const { profile } = await createAgenticProfile({ createJwk });
+        const { profile } = await createAgenticProfile({ createJwkSet });
         profile.id = EXAMPLE_DID;
         const didResolver = createDidResolver([profile]);
 
@@ -57,12 +55,22 @@ function createDidResolver( profiles: AgenticProfile[] ) {
     return new Resolver({ web: resolve }, { cache } );
 }
 
-async function createJwk() {
-    return {
-        "kty": "OKP",
-        "alg": "EdDSA",
-        "crv": "Ed25519",
-        "x": "UTG3YeUcVg4-2xklwrCpFCdBOBiVU8UhPE_yvG9ojJA",
-        "d": "jTzwi_KSJIqHy63dtjsJoDcOPT4A26JdvLb0ipTiqlM"
-    }
+async function createJwkSet() {
+
+    const b64uPublicKey = "UTG3YeUcVg4-2xklwrCpFCdBOBiVU8UhPE_yvG9ojJA";
+    const b64uPrivateKey = "jTzwi_KSJIqHy63dtjsJoDcOPT4A26JdvLb0ipTiqlM";
+
+    const publicJwk = {
+        kty: "OKP",
+        alg: "EdDSA",
+        crv: "Ed25519",
+        x: b64uPublicKey
+    } as EdDSAPublicJWK;
+
+    const privateJwk = {
+        ...publicJwk,
+        d: b64uPrivateKey
+    } as EdDSAPrivateJWK;
+
+    return { publicJwk, b64uPublicKey, privateJwk, b64uPrivateKey } as JWKSet;
 }
