@@ -7,8 +7,15 @@ import { Part } from "./a2a-parts.js";
 
 export * from "./a2a-parts.js";
 
-export type DID = string;           // MAY include a fragment... or not 
-export type FragmentID = string;    // may be full DID, or just the fragment part, such as "#key-7"
+export type DID = string;           // May include a fragment... or not 
+export type FragmentID = string;    // May be full DID, or just the fragment part, such as "#key-7"
+                                    // Follows https://www.w3.org/TR/html4/types.html (ID and NAME tokens)
+                                    // "ID and NAME tokens must begin with a letter ([A-Za-z]) and may be
+                                    // followed by any number of letters, digits ([0-9]), hyphens ("-"), 
+                                    // underscores ("_"), colons (":"), and periods (".").
+                                    // e.g. #A-big_id:with:no-spaces7
+                                    // We suggest using ":" to create paths, such as:
+                                    // #connect:love
 export type UserID = string | number;
 
 //
@@ -59,14 +66,11 @@ export interface JWKSet {
 // Standardize globally scoped agent messaging (DIDs); use Googles A2A message parts
 //
 
-export interface TypedMeta {
-    type: string,
-    [ key: string ]: any
-}
+export type Metadata = Record<string, unknown>;
 
 export interface AgentMessage {
     from: DID;
     content: string | Part[];
-    meta?: TypedMeta[],
+    metadata?: Metadata;
     created?: Date;
 }
