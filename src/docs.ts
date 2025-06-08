@@ -1,6 +1,4 @@
 import {
-    parse,
-    ParsedDID,
     Resolver,
     VerificationMethod
 } from "did-resolver";
@@ -11,8 +9,6 @@ import {
 } from "./schema.js";
 
 
-//
-// DID tools
 /*
     did:${METHOD}:${METHOD_ID}${PARAMS}${PATH}${QUERY}${FRAGMENT}
     e.g. did:web:iamagentic.ai:mike
@@ -43,50 +39,41 @@ export function resolveDocumentPartId( partOrId: DocumentPartOrFragmentID ): Fra
         return partOrId.id as FragmentID;
 }
 
-// DEPRECATED, use pruneFragmentId
-export function resolveFragmentId( didOrFid: string ) {
-    if( didOrFid.startsWith('#') )
-        return { did: null, fragment: didOrFid.slice(1) };
-    else
-        return parse( didOrFid ) as ParsedDID;
-}
-
-// DEPRECATED, use pruneFragmentId
 export function removeFragmentId( did: DID ) {
     return did.split("#")[0];
 }
 
 export function pruneFragmentId( did: DID ) {
-    const [ documentId, fragment ] = did.split("#");
-    return { documentId, fragmentId: '#' + fragment };
+    if( typeof did !== 'string' )
+        throw new Error(`Prune fragment ID expected string, got ${typeof did} for ${JSON.stringify(did)}`);
+    const [ documentId, fragment, extraneous ] = did.split("#");
+    if( extraneous )
+        throw new Error(`Unexpected extraneous fragment in ${did}`);
+    const fragmentId = fragment ? '#' + fragment : undefined;
+    return { documentId, fragmentId };
 }
 
 export function matchingFragmentIds( partOrId: DocumentPartOrFragmentID, fid2: FragmentID ) {
-    //console.log( 'matchingFragmentIds', partOrId, fid2 );
     const fid1 = resolveDocumentPartId( partOrId );
-    if( !fid1 )
+    if( !fid1 || !fid2 )
         return false;
-    else if( fid1 === fid2 )
-        return true;    // simple case
 
-    const parsed1 = resolveFragmentId( fid1 );
-    const parsed2 = resolveFragmentId( fid2 );
-    if( !parsed1?.fragment || !parsed2?.fragment )
+    const { documentId: did1, fragmentId: fragmentId1 } = pruneFragmentId( fid1 );
+    const { documentId: did2, fragmentId: fragmentId2 } = pruneFragmentId( fid2 );
+    if( did1 && did2 && did1 !== did2 )
+        return false;   // different documents
+    if( !fragmentId1 || !fragmentId2 )
         return false;   // must have fragments to match
-    if( parsed1.fragment !== parsed2.fragment )
+    if( fragmentId1 !== fragmentId2 )
         return false;   // simple case of fragments not matching
-    if( parsed1.did && parsed2.did )
-        return false;
-
-    //console.log( 'matchingFragmentIds is TRUE for', fid1, fid2 );
+    
     return true;
 }
 
 export async function resolveAgentServiceUrl( agentDid: DID, didResolver: Resolver ) {
-    const { fragment } = resolveFragmentId( agentDid );
-    if( !fragment )
+    const { fragmentId: serviceId } = pruneFragmentId( agentDid );
+    if( !serviceId )
         throw new Error(`Cannot resolve peer agent service URL when there is no fragment for ${agentDid}`);
-    const serviceId = "#" + fragment;
 
     const profile = await fetchAgenticProfile( agentDid, didResolver );
 

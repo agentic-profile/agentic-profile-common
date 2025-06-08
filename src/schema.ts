@@ -5,7 +5,6 @@ import {
 } from "did-resolver";
 import { Part } from "./a2a-parts.js";
 
-export * from "./a2a-parts.js";
 
 export type DID = string;           // May include a fragment... or not 
 export type FragmentID = string;    // May be full DID, or just the fragment part, such as "#key-7"
@@ -13,10 +12,12 @@ export type FragmentID = string;    // May be full DID, or just the fragment par
                                     // "ID and NAME tokens must begin with a letter ([A-Za-z]) and may be
                                     // followed by any number of letters, digits ([0-9]), hyphens ("-"), 
                                     // underscores ("_"), colons (":"), and periods (".").
-                                    // e.g. #A-big_id:with:no-spaces7
-                                    // We suggest using ":" to create paths, such as:
-                                    // #connect:love
+                                    // For service/agent ids, we suggest using "-" to separate words,
+                                    // such as: #connect-love
+                                    // It is up to the DID document builder to ensure that the fragment id
+                                    // is unique within the DID document.
 export type UserID = string | number;
+
 
 //
 // Agentic Profile (Overlays DID document)
@@ -24,14 +25,14 @@ export type UserID = string | number;
 
 export interface AgentService extends Service {
     // id: string,                  // Can be fully qualified DID, DID+#fragment-id, or just a #fragment-id 
-    // type: string,                // e.g. "Agentic/Chat", "Agentic/presence", "A2A/card"
-    // serviceEndpoint: string,     // e.g. `https://agents.matchwise.ai/agent-chat`,
-    name: string,                   // friendly name
+    // type: string,                // Case insensitive.  e.g. "Agentic/Chat", "Agentic/presence", "A2A/card"
+    // serviceEndpoint: string,     // e.g. `https://agents.matchwise.ai/users/1/agent/connect`,
+    name: string,                   // Friendly human-readable name
     capabilityInvocation: (FragmentID | VerificationMethod)[]
 }
 
 export interface AgenticProfile extends DIDDocument {
-    name: string      // nickname, not globally unique
+    name: string      // Nickname, not globally unique
     ttl?: number      // TTL in seconds, default is 86400 (one day)
 }
 
@@ -66,11 +67,13 @@ export interface JWKSet {
 // Standardize globally scoped agent messaging (DIDs); use Googles A2A message parts
 //
 
+export * from "./a2a-parts.js";
+
 export type Metadata = Record<string, unknown>;
 
 export interface AgentMessage {
     from: DID;
     content: string | Part[];
-    metadata?: Metadata;
+    metadata?: Metadata | null;
     created?: Date;
 }
