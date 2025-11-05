@@ -3,8 +3,6 @@ import {
     Service,
     VerificationMethod
 } from "did-resolver";
-import { Part } from "./a2a-parts.js";
-
 
 export type DID = string;           // May include a fragment... or not 
 export type FragmentID = string;    // May be full DID, or just the fragment part, such as "#key-7"
@@ -67,8 +65,6 @@ export interface JWKSet {
 // Standardize globally scoped agent messaging (DIDs); use Googles A2A message parts
 //
 
-export * from "./a2a-parts.js";
-
 export type Metadata = Record<string, unknown>;
 
 export interface AgentMessage {
@@ -77,3 +73,120 @@ export interface AgentMessage {
     metadata?: Metadata | null;
     created?: Date;
 }
+
+
+/**
+ * Represents a text segment within a message or artifact.
+ *
+ * This interface was referenced by `MySchema`'s JSON-Schema
+ * via the `definition` "TextPart".
+ */
+export interface TextPart {
+    /**
+     * The type of this part, used as a discriminator. Always 'text'.
+     */
+    kind: "text";
+    /**
+     * Optional metadata associated with this part.
+     */
+    metadata?: {
+      [k: string]: unknown;
+    };
+    /**
+     * The string content of the text part.
+     */
+    text: string;
+  }
+
+  /**
+   * Represents a file segment within a message or artifact. The file content can be
+   * provided either directly as bytes or as a URI.
+   *
+   * This interface was referenced by `MySchema`'s JSON-Schema
+   * via the `definition` "FilePart".
+   */
+  export interface FilePart {
+    /**
+     * The file content, represented as either a URI or as base64-encoded bytes.
+     */
+    file: FileWithBytes | FileWithUri;
+    /**
+     * The type of this part, used as a discriminator. Always 'file'.
+     */
+    kind: "file";
+    /**
+     * Optional metadata associated with this part.
+     */
+    metadata?: {
+      [k: string]: unknown;
+    };
+  }
+
+  /**
+   * Represents a file with its content provided directly as a base64-encoded string.
+   *
+   * This interface was referenced by `MySchema`'s JSON-Schema
+   * via the `definition` "FileWithBytes".
+   */
+  export interface FileWithBytes {
+    /**
+     * The base64-encoded content of the file.
+     */
+    bytes: string;
+    /**
+     * The MIME type of the file (e.g., "application/pdf").
+     */
+    mimeType?: string;
+    /**
+     * An optional name for the file (e.g., "document.pdf").
+     */
+    name?: string;
+  }
+
+  /**
+   * Represents a file with its content located at a specific URI.
+   *
+   * This interface was referenced by `MySchema`'s JSON-Schema
+   * via the `definition` "FileWithUri".
+   */
+  export interface FileWithUri {
+    /**
+     * The MIME type of the file (e.g., "application/pdf").
+     */
+    mimeType?: string;
+    /**
+     * An optional name for the file (e.g., "document.pdf").
+     */
+    name?: string;
+    /**
+     * A URL pointing to the file's content.
+     */
+    uri: string;
+  }
+  
+  /**
+   * Represents a structured data segment (e.g., JSON) within a message or artifact.
+   *
+   * This interface was referenced by `MySchema`'s JSON-Schema
+   * via the `definition` "DataPart".
+   */
+  export interface DataPart {
+    /**
+     * The structured data content.
+     */
+    data: {
+      [k: string]: unknown;
+    };
+    /**
+     * The type of this part, used as a discriminator. Always 'data'.
+     */
+    kind: "data";
+    /**
+     * Optional metadata associated with this part.
+     */
+    metadata?: {
+      [k: string]: unknown;
+    };
+  }
+
+export type Part = TextPart | FilePart | DataPart;

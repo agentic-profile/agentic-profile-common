@@ -6,3 +6,4 @@ export {
     getResolver as getWebDidResolver,
     webDidToUrl
 } from "./web-did-resolver.js";
+export * from "./schema.js";
