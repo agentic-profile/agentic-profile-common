@@ -71,7 +71,14 @@ export interface AgentMessage {
     from: DID;
     content: string | Part[];
     metadata?: Metadata | null;
-    created?: Date;
+    created?: string;    // ISODateString
+}
+
+export interface AgentMessageEnvelope {
+    to: DID;
+    from: DID;
+    created: string;    // ISODateString
+    rewind?: string;    // ISODateString
 }
 
 
