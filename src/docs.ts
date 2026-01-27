@@ -6,7 +6,7 @@ import {
     AgenticProfile,
     DID,
     FragmentID
-} from "./schema.js";
+} from "./types.js";
 
 
 /*
@@ -39,11 +39,12 @@ export function resolveDocumentPartId( partOrId: DocumentPartOrFragmentID ): Fra
         return partOrId.id as FragmentID;
 }
 
+/*
 export function removeFragmentId( did: DID ) {
     return did.split("#")[0];
-}
+}*/
 
-export function pruneFragmentId( did: DID ) {
+function pruneFragmentId( did: DID ) {
     if( typeof did !== 'string' )
         throw new Error(`Prune fragment ID expected string, got ${typeof did} for ${JSON.stringify(did)}`);
     const [ documentId, fragment, extraneous ] = did.split("#");

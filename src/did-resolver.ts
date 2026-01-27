@@ -9,9 +9,9 @@ import {
 import {
     AgenticProfile,
     DID
-} from "./schema.js";
+} from "./types.js";
 import { getResolver as getWebDidResolver } from "./web-did-resolver.js";
-import { removeFragmentId } from "./docs.js";
+import { parseDid } from "./did.js";
 
 
 // Support storage for caching DID documents
@@ -78,7 +78,7 @@ export class InMemoryAgenticProfileStore implements AgenticProfileStore {
     }
 
     async loadAgenticProfile(did: DID): Promise<AgenticProfile | undefined> {
-        return this.profileMap.get(removeFragmentId(did));
+        return this.profileMap.get(parseDid(did).did);
     }
 
     async dump(): Promise<any> {

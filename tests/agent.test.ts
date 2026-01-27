@@ -6,7 +6,7 @@ import {
 import { webDidToUrl } from "../src/web-did-resolver.js";
 import { createAgenticProfile } from "../src/profile.js";
 import { fetchAgenticProfile } from "../src/docs.js";
-import { AgenticProfile, JWKSet, EdDSAPrivateJWK, EdDSAPublicJWK } from "../src/schema.js";
+import { AgenticProfile, JWKSet, EdDSAPrivateJWK, EdDSAPublicJWK } from "../src/types.js";
 
 const EXAMPLE_DID = "did:web:example.com:test"
 

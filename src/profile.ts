@@ -3,42 +3,41 @@ import {
     AgenticProfile,
     AgentService,
     JWKSet
-} from "./schema.js";
+} from "./types.js";
 
 
 type ProfileTemplate = {
     name?: string
 }
 
-type ServiceTemplate = {
-    name?: string,      // service name, or '<subtype> agent'
-    type?: string,      // service type, or 'Agentic/<subtype>'
-    id?: string,        // service id, or 'agent-<subtype>'
-    subtype?: string,
+export type ServiceTemplate = {
+    name?: string,       // service name, defaults to `${type} ${id} agent`
+    type: "A2A" | "MCP" | "a2a" | "mcp", // case insensitive
+    id: string,          // service id without leading '#'
     url: string
 }
 
 type Params = {
     template?: ProfileTemplate,
     services?: ServiceTemplate[],
-    createJwkSet: ()=>Promise<JWKSet>
+    createJwkSet: () => Promise<JWKSet>
 }
 
-export async function createAgenticProfile({ template = {}, services = [], createJwkSet }: Params ) {
-    if( !createJwkSet )
+export async function createAgenticProfile({ template = {}, services = [], createJwkSet }: Params) {
+    if (!createJwkSet)
         throw new Error("Missing createJwk parameter");
 
     const keyring: JWKSet[] = [];
     const service: AgentService[] = [];
-    for( const { name, type, id, subtype, url } of services ) {
-        if( !(name && id && type) && !subtype )
-            throw new Error("createAgenticProfile() missing subtype");
-        if( !url )
+    for (const { name, type, id, url } of services) {
+        if (!(id && type))
+            throw new Error("createAgenticProfile() missing id or type");
+        if (!url)
             throw new Error("createAgenticProfile() missing url");
 
         const jwkSet = await createJwkSet();
-        const vmid = `#agent-${id ?? subtype}-key-0`;
-        keyring.push({...jwkSet, id: vmid } as any);
+        const vmid = `#agent-${id}-key-0`;
+        keyring.push({ ...jwkSet, id: vmid } as any);
 
         const verificationMethod = {
             id: vmid,
@@ -47,13 +46,13 @@ export async function createAgenticProfile({ template = {}, services = [], creat
         } as VerificationMethod;
 
         service.push({
-            name: name ?? `${subtype} agent`,
-            id: `#${id ?? 'agent-' + subtype}`,
-            type: type ?? `Agentic/${subtype}`,
+            name: name ?? `${type} ${id} agent`,
+            id: `#${id}`,
+            type,
             serviceEndpoint: url,
             capabilityInvocation: [
                 verificationMethod
-            ] 
+            ]
         });
     };
 
