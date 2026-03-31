@@ -20,14 +20,14 @@ export function createResolverCache(store: AgenticProfileStore) {
         if (parsed.params && parsed.params['no-cache'] === 'true')
             return await resolve()  // required by DID spec
 
-        const profile = await store.loadAgenticProfile( parsed.did );
+        const profile = await store.read( parsed.did );
         if( profile )
             return asDidResolutionResult( profile );
 
         const result = await resolve();
         const { error } = result.didResolutionMetadata;
         if( !error && result.didDocument )
-            await store.saveAgenticProfile( result.didDocument as AgenticProfile );
+            await store.upsert( result.didDocument as AgenticProfile );
 
         return result;
     }
@@ -52,19 +52,13 @@ export function createDidResolver(options?: DidResolverOptions) {
 }
 
 export interface AgenticProfileStore {
-    saveAgenticProfile( profile: AgenticProfile ): Promise<void>
-    loadAgenticProfile( did: DID ): Promise<AgenticProfile | undefined>
-
-    dump: () => Promise<any>
+    upsert( profile: AgenticProfile ): Promise<void>
+    read( did: DID ): Promise<AgenticProfile | undefined>
 }
 
 //
 // Provide an in memory implementation of an AgenticProfileStore
 //
-
-function mapToObject<K extends PropertyKey, V>(map: Map<K, V>): Record<K, V> {
-    return Object.fromEntries(map) as Record<K, V>;
-}
 
 export class InMemoryAgenticProfileStore implements AgenticProfileStore {
     private profileMap: Map<string, AgenticProfile>;
@@ -73,18 +67,11 @@ export class InMemoryAgenticProfileStore implements AgenticProfileStore {
         this.profileMap = new Map<string, AgenticProfile>();
     }
 
-    async saveAgenticProfile(profile: AgenticProfile): Promise<void> {
+    async upsert(profile: AgenticProfile): Promise<void> {
         this.profileMap.set(profile.id, profile);
     }
 
-    async loadAgenticProfile(did: DID): Promise<AgenticProfile | undefined> {
+    async read(did: DID): Promise<AgenticProfile | undefined> {
         return this.profileMap.get(parseDid(did).did);
-    }
-
-    async dump(): Promise<any> {
-        return {
-            database: "None",
-            agenticProfileCache: mapToObject(this.profileMap)
-        };
     }
 }

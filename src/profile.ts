@@ -11,9 +11,9 @@ type ProfileTemplate = {
 }
 
 export type ServiceTemplate = {
-    name?: string,       // service name, defaults to `${type} ${id} agent`
-    type: "A2A" | "MCP" | "a2a" | "mcp", // case insensitive
-    id: string,          // service id without leading '#'
+    name?: string,                // service name, defaults to `${type} ${id} agent`
+    type: "a2a" | "mcp" | string, // case insensitive
+    id: string,                   // service id without leading '#'
     url: string
 }
 
