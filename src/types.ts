@@ -22,10 +22,10 @@ export type UserID = string | number;
 //
 
 export interface AgentService extends Service {
-    // id: string,                  // Can be fully qualified DID, DID+#fragment-id, or just a #fragment-id 
-    // type: string,                // Case insensitive.  e.g. "Agentic/Chat", "Agentic/presence", "A2A/card"
-    // serviceEndpoint: string,     // e.g. `https://agents.matchwise.ai/users/1/agent/connect`,
-    name: string,                   // Friendly human-readable name
+    // id: string,                          // Can be fully qualified DID, DID+#fragment-id, or just a #fragment-id 
+    // type: string,                        // Case insensitive.  e.g. "Agentic/Chat", "Agentic/presence", "A2A/card"
+    // serviceEndpoint: string | string[],  // e.g. `https://agents.matchwise.ai/users/1/agent/connect` or [`https://agents.matchwise.ai/users/1/agent/connect`, `https://agents.matchwise.ai/users/1/agent/connect`],
+    name: string,                           // Friendly human-readable name
     capabilityInvocation: (FragmentID | VerificationMethod)[]
 }
 
