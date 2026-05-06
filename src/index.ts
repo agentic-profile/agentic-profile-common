@@ -8,3 +8,4 @@ export {
     webDidToUrl
 } from "./web-did-resolver.js";
 export * from "./types.js";
+export * from "./logger.js";
