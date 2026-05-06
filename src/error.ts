@@ -4,6 +4,7 @@
 export type ServerErrorKind =
     "InternalError"        // Server programming/configuration issue - do not retry
     | "ServiceUnavailable" // Server is temporarily unable to handle the request - try again later
+    | "ResourceUnavailable" // Server resource is temporarily unavailable - try again later
     | "MalformedRequest"   // Client request is malformed - do not retry
     | "InvalidMethod"      // Client request method is invalid or has no handler- do not retry
     | "InvalidParameters"  // Client request parameters are invalid - do not retry
@@ -66,6 +67,7 @@ export function resolveServerErrorHttpStatus(error: ServerError) {
         case "Conflict":
             return 409;
         case "ServiceUnavailable":
+        case "ResourceUnavailable":
             return 503;
         case "InternalError":
         default:
